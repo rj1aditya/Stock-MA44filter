@@ -1,2 +1,2 @@
-x=`divide $1 $2`
+x=`./divide $1 $2`
 echo $x

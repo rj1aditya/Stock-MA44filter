@@ -1,4 +1,5 @@
 DiffInCurPrcAnd44Mva=0
+AverageFileName="/Users/rj1aditya//Desktop/T1/Scr/Nifty/Stock-MA44filter/Dev-Src/nse500/Data/Average/Analysis_`date +%d%m%Y`.csv"
 
 OptimizeDiffInCurPrcAnd44Mva()
 {
@@ -132,15 +133,15 @@ OptimizeDiffInCurPrcAnd44Mva()
 }
 
 
-#This function remove equity data which curr mkt price is less than 100 or greater than 3500
+#This function remove equity data which curr mkt price is less than 70 or greater than 4000
 FilterAnalysisStock()
 {
-    cd /home/rj1aditya/Dev/Scr/nse500/Data/Average/
+    cd /Users/rj1aditya/Desktop/T1/Scr/Nifty/Stock-MA44filter/Dev-Src/nse500/Data/Average/
 
-    for data in `cat Analysis.csv`
+    for data in `cat $AverageFileName`
     do
         CurrMktPrice=`echo $data | awk -F',' '{print $2}' | awk -F'.' '{print $1}'`
-        if [ $CurrMktPrice -lt 3500 ] && [ $CurrMktPrice -gt 101 ]
+        if [ $CurrMktPrice -lt 4000 ] && [ $CurrMktPrice -gt 70 ]
         then
             echo $data >> RawFile
         fi
@@ -152,7 +153,7 @@ FilterAnalysisStock()
 #This function compare the Current Mkt price from 44MVA and 200MVA, and make entries in the AnalysisFilt.csv
 WatchList()
 {
-    cd /home/rj1aditya/Dev/Scr/nse500/Data/Average/
+    cd /Users/rj1aditya/Desktop/T1/Scr/Nifty/Stock-MA44filter/Dev-Src/nse500/Data/Average/
     for data in `cat AnalysisFilt.csv`
     do
         equityName=`echo $data | awk -F',' '{print $1}'`
@@ -173,9 +174,21 @@ WatchList()
     done
 
     mv RawFile1 AnalysisFilt_CurMktPrc_Above_200_44.csv
-    cp AnalysisFilt_CurMktPrc_Above_200_44.csv ./bkup/AnalysisFilt_CurMktPrc_Above_200_44_`date +%d%m%Y`.csv
+    #backup
+    #cp AnalysisFilt_CurMktPrc_Above_200_44.csv /Users/rj1aditya/Desktop/T1/Scr/Nifty/Stock-MA44filter/Dev-Src/nse500/Data/Average/AnalysisFilt_CurMktPrc_Above_200_44_`date +%d%m%Y`.csv
     mv RawFile2 AnalysisFilt_CurMktPrc_Below_200_44.csv
-    cp AnalysisFilt_CurMktPrc_Below_200_44.csv ./bkup/AnalysisFilt_CurMktPrc_Below_200_44_`date +%d%m%Y`.csv
+    #backup
+    #cp AnalysisFilt_CurMktPrc_Below_200_44.csv ./bkup/AnalysisFilt_CurMktPrc_Below_200_44_`date +%d%m%Y`.csv
+    #put header at the top of the file
+    sed -e  '1i\
+    Equity, Cur price, MVA44, MV200' AnalysisFilt.csv > AnalysisFilt1.csv
+    mv AnalysisFilt1.csv AnalysisFilt.csv
+    sed -e  '1i\
+    Equity,CurrMktPrice,MVA44,MVA200,CurPrc 44Mva diff,CurPrc 44Mva actual diff, 44MVA 200MVA diff' AnalysisFilt_CurMktPrc_Above_200_44.csv > AnalysisFilt_CurMktPrc_Above_200_441.csv
+    mv AnalysisFilt_CurMktPrc_Above_200_441.csv AnalysisFilt_CurMktPrc_Above_200_44.csv
+    sed -e  '1i\
+    Equity,CurrMktPrice,MVA44,MVA200,CurPrc 44Mva diff,CurPrc 44Mva actual diff, 44MVA 200MVA diff' AnalysisFilt_CurMktPrc_Below_200_44.csv > AnalysisFilt_CurMktPrc_Below_200_441.csv
+    mv AnalysisFilt_CurMktPrc_Below_200_441.csv AnalysisFilt_CurMktPrc_Below_200_44.csv
 }
 
 main()
